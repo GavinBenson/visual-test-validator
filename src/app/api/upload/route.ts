@@ -11,46 +11,60 @@ export async function POST(request: NextRequest) {
         }
 
         const text = await file.text();
-        const lines = text.split('\n').filter(line => line.trim());
 
-        if (lines.length < 2) {
-            return NextResponse.json({ error: 'Invalid CSV format' }, { status: 400 });
-        }
+        // Use a proper CSV parser to handle quoted fields with newlines
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
 
-        const headers = lines[0].split(',');
         const testCases: TestCase[] = [];
+        let currentLine = '';
+        let inQuotes = false;
 
-        // Parse Qase CSV format
         for (let i = 1; i < lines.length; i++) {
-            const values = parseCSVLine(lines[i]);
-            const row: Record<string, string> = {};  // FIXED: Changed from any to Record<string, string>
+            currentLine += lines[i];
 
-            headers.forEach((header, index) => {
-                row[header.trim()] = values[index] || '';
-            });
+            // Count quotes to determine if we're inside a quoted field
+            const quoteCount = (currentLine.match(/"/g) || []).length;
+            inQuotes = quoteCount % 2 !== 0;
 
-            // Only process rows that have actual test case data (not suite headers)
-            if (row['v2.id'] && row.title && row['v2.id'].trim() !== '') {
-                // Combine steps and expected results
-                const stepActions = row.steps_actions ? row.steps_actions.split('\n').filter((s: string) => s.trim()) : [];
-                const stepResults = row.steps_result ? row.steps_result.split('\n').filter((s: string) => s.trim()) : [];
+            if (!inQuotes && currentLine.trim()) {
+                // We have a complete row
+                const values = parseCSVRow(currentLine);
+                const row: Record<string, string> = {};
 
-                const combinedSteps = stepActions.map((action: string, idx: number) => {
-                    const cleanAction = action.replace(/^\d+\.\s*"?|"$/g, '').trim();
-                    const result = stepResults[idx] ? stepResults[idx].replace(/^\d+\.\s*"?|"$/g, '').trim() : '';
-                    return result ? `${cleanAction} -> Expected: ${result}` : cleanAction;
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
                 });
 
-                testCases.push({
-                    id: row['v2.id'].toString(),
-                    title: row.title,
-                    steps: combinedSteps.length > 0 ? combinedSteps : ['No steps defined'],
-                    url: 'https://your-ats-domain.com',
-                    status: 'pending',
-                    description: row.description || '',
-                    preconditions: row.preconditions || '',
-                    postconditions: row.postconditions || ''
-                });
+                // Only process rows that have actual test case data
+                if (row['v2.id'] && row['v2.id'].trim() && row.title) {
+                    const stepActions = parseSteps(row.steps_actions);
+                    const stepResults = parseSteps(row.steps_result);
+
+                    // Combine steps with expected results
+                    const combinedSteps = stepActions.map((action, idx) => {
+                        const result = stepResults[idx] || '';
+                        return result ? `${action} -> Expected: ${result}` : action;
+                    });
+
+                    if (combinedSteps.length > 0) {
+                        testCases.push({
+                            id: row['v2.id'].toString(),
+                            title: row.title,
+                            steps: combinedSteps,
+                            url: 'https://your-ats-domain.com',
+                            status: 'pending',
+                            description: row.description || '',
+                            preconditions: row.preconditions || '',
+                            postconditions: row.postconditions || ''
+                        });
+                    }
+                }
+
+                currentLine = '';
+            } else if (inQuotes) {
+                // Continue to next line (multi-line field)
+                currentLine += '\n';
             }
         }
 
@@ -61,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 }
 
-function parseCSVLine(line: string): string[] {
+function parseCSVRow(line: string): string[] {
     const result = [];
     let current = '';
     let inQuotes = false;
@@ -70,15 +84,40 @@ function parseCSVLine(line: string): string[] {
         const char = line[i];
 
         if (char === '"') {
-            inQuotes = !inQuotes;
+            if (inQuotes && line[i + 1] === '"') {
+                // Escaped quote
+                current += '"';
+                i++;
+            } else {
+                inQuotes = !inQuotes;
+            }
         } else if (char === ',' && !inQuotes) {
-            result.push(current.trim());
+            result.push(current);
             current = '';
         } else {
             current += char;
         }
     }
 
-    result.push(current.trim());
+    result.push(current);
     return result;
+}
+
+function parseSteps(stepsField: string): string[] {
+    if (!stepsField || !stepsField.trim()) {
+        return [];
+    }
+
+    // Split by newlines and clean each step
+    return stepsField
+        .split('\n')
+        .map(step => step.trim())
+        .filter(step => step.length > 0)
+        .map(step => {
+            // Remove step numbers and surrounding quotes
+            return step
+                .replace(/^\d+\.\s*"?/, '')  // Remove "1. " or "1. ""
+                .replace(/"$/, '')            // Remove trailing quote
+                .trim();
+        });
 }
