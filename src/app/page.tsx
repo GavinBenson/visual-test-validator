@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import FileUpload from '@/components/FileUpload'
 import TestCaseViewer from '@/components/TestCaseViewer'
-import { TestCase } from '@/types'
+import { TestCase, Screenshot } from '@/types'  // Add Screenshot here
 
 export default function Home() {
     const [testCases, setTestCases] = useState<TestCase[]>([])
@@ -17,14 +17,21 @@ export default function Home() {
         setReviewedCount(0)
     }
 
-    const handleStatusChange = (status: 'approved' | 'rejected', notes?: string) => {
+    const handleStatusChange = (
+        status: 'approved' | 'rejected',
+        notes?: string,
+        stepResults?: { [key: number]: 'pass' | 'fail' | 'pending' },
+        screenshots?: Screenshot[]
+    ) => {
         if (selectedCaseIndex === null) return
 
         const updatedCases = [...testCases]
         const wasAlreadyReviewed = updatedCases[selectedCaseIndex].status !== 'pending'
 
         updatedCases[selectedCaseIndex].status = status
-        updatedCases[selectedCaseIndex].notes = notes  // Save the notes
+        updatedCases[selectedCaseIndex].notes = notes
+        updatedCases[selectedCaseIndex].stepResults = stepResults
+        updatedCases[selectedCaseIndex].screenshots = screenshots
 
         setTestCases(updatedCases)
 

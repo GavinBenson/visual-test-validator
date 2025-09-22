@@ -1,3 +1,9 @@
+export interface Screenshot {
+    step: string;
+    screenshot: string;
+    stepIndex: number;
+}
+
 export interface TestCase {
     id: string;
     title: string;
@@ -7,11 +13,7 @@ export interface TestCase {
     description?: string;
     preconditions?: string;
     postconditions?: string;
-    notes?: string;  // Add this
-}
-
-export interface Screenshot {
-    step: string;
-    screenshot: string;
-    stepIndex: number;
+    notes?: string;
+    stepResults?: { [key: number]: 'pass' | 'fail' | 'pending' };
+    screenshots?: Screenshot[];
 }

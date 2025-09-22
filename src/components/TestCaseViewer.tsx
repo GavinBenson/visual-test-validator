@@ -3,7 +3,12 @@ import { TestCase, Screenshot } from '@/types';
 
 interface TestCaseViewerProps {
     testCase: TestCase;
-    onStatusChange: (status: 'approved' | 'rejected', notes?: string) => void;
+    onStatusChange: (
+        status: 'approved' | 'rejected',
+        notes?: string,
+        stepResults?: { [key: number]: 'pass' | 'fail' | 'pending' },
+        screenshots?: Screenshot[]
+    ) => void;
 }
 
 export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseViewerProps) {
@@ -38,10 +43,23 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     }, [testCase.url]);
 
     useEffect(() => {
+        // Load existing data if it exists
         if (testCase.notes) {
             setNotes(testCase.notes);
         } else {
             setNotes('');
+        }
+
+        if (testCase.stepResults) {
+            setStepResults(testCase.stepResults);
+        } else {
+            setStepResults({});
+        }
+
+        if (testCase.screenshots) {
+            setScreenshots(testCase.screenshots);
+        } else {
+            setScreenshots([]);
         }
     }, [testCase]);
 
@@ -140,7 +158,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
             finalNotes += `\n\nFailed steps: ${failedSteps.join(', ')}`;
         }
 
-        onStatusChange(decision, finalNotes);
+        // Pass all the data back
+        onStatusChange(decision, finalNotes, stepResults, screenshots);
     };
 
     return (
