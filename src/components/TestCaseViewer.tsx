@@ -231,7 +231,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         <img
                             src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
                             alt={`Step ${currentStepIndex + 1}`}
-                            className="w-full rounded border"
+                            className="w-full max-h-64 object-contain rounded border"  // Changed: added max-h-64
                         />
                     </div>
                 )}
@@ -296,20 +296,23 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     />
                 </div>
 
-                <div className="flex gap-3 pb-4">
-                    <button
-                        onClick={() => handleFinalDecision('rejected')}
-                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-semibold"
-                    >
-                        Reject
-                    </button>
-                    <button
-                        onClick={() => handleFinalDecision('approved')}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold"
-                    >
-                        Approve
-                    </button>
-                </div>
+                {/* Final Decision only show when all steps have been reviewed */}
+                {Object.keys(stepResults).length === testCase.steps.length && (
+                    <div className="flex gap-3 pb-4">
+                        <button
+                            onClick={() => handleFinalDecision('rejected')}
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-semibold"
+                        >
+                            Reject
+                        </button>
+                        <button
+                            onClick={() => handleFinalDecision('approved')}
+                            className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold"
+                        >
+                            Approve
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
