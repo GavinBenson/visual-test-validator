@@ -13,7 +13,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const [notes, setNotes] = useState('');
     const [stepResults, setStepResults] = useState<{ [key: number]: 'pass' | 'fail' | 'pending' }>({});
     const [atsWindow, setAtsWindow] = useState<Window | null>(null);
-    const [showSetupInstructions, setShowSetupInstructions] = useState(true);
 
     const currentStep = testCase.steps[currentStepIndex];
     const isLastStep = currentStepIndex === testCase.steps.length - 1;
@@ -138,26 +137,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     return (
         <div className="h-screen bg-gray-50 overflow-y-auto">
             <div className="max-w-full p-4">
-                {showSetupInstructions && (
-                    <div className="bg-blue-600 text-white p-4 rounded-lg mb-4">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h3 className="font-semibold mb-2">Quick Setup for Best Experience:</h3>
-                                <ol className="text-sm space-y-1 list-decimal list-inside">
-                                    <li>The ATS window opened in a popup - position it on the LEFT side of your screen</li>
-                                    <li>Drag THIS window to the RIGHT side of your screen</li>
-                                    <li>Now you can see both windows side-by-side!</li>
-                                </ol>
-                            </div>
-                            <button
-                                onClick={() => setShowSetupInstructions(false)}
-                                className="text-white hover:text-gray-200 text-xl ml-4"
-                            >
-                                X
-                            </button>
-                        </div>
-                    </div>
-                )}
 
                 <div className="bg-white rounded-lg shadow-lg p-4 mb-4 sticky top-0 z-10">
                     <h2 className="text-xl font-semibold text-gray-800 mb-3">{testCase.title}</h2>
