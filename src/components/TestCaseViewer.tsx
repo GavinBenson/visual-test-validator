@@ -1,4 +1,4 @@
-import { useState } from 'react';  // FIXED: Removed useEffect
+import { useState } from 'react';
 import { TestCase, Screenshot } from '@/types';
 
 interface TestCaseViewerProps {
@@ -12,6 +12,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const [isCapturing, setIsCapturing] = useState(false);
     const [notes, setNotes] = useState('');
     const [stepResults, setStepResults] = useState<{ [key: number]: 'pass' | 'fail' | 'pending' }>({});
+    const [iframeKey, setIframeKey] = useState(0);
 
     const currentStep = testCase.steps[currentStepIndex];
     const isLastStep = currentStepIndex === testCase.steps.length - 1;
@@ -52,7 +53,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
             });
         } catch (error) {
             console.error('Error capturing screenshot:', error);
-            alert('Screenshot capture failed. Please make sure you grant screen sharing permission.');
+            alert('Screenshot capture failed. Make sure to select the browser window/tab with your ATS when prompted.');
             setIsCapturing(false);
         }
     };
@@ -82,8 +83,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
 
     const handleFinalDecision = (decision: 'approved' | 'rejected') => {
         const failedSteps = Object.entries(stepResults)
-            .filter(([, result]) => result === 'fail')  // FIXED: Removed unused variable name
-            .map(([index]) => parseInt(index) + 1);  // FIXED: Removed unused variable name
+            .filter(([, result]) => result === 'fail')
+            .map(([index]) => parseInt(index) + 1);
 
         let finalNotes = notes;
         if (failedSteps.length > 0) {
@@ -93,179 +94,213 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
         onStatusChange(decision, finalNotes);
     };
 
+    const openInNewWindow = () => {
+        window.open(testCase.url, 'ats-window', 'width=1200,height=800');
+    };
+
+    const refreshIframe = () => {
+        setIframeKey(prev => prev + 1);
+    };
+
     return (
-        <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
-            <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">{testCase.title}</h2>
-                <div className="text-sm text-gray-600">
-                    Step {currentStepIndex + 1} of {testCase.steps.length}
+        <div className="flex h-screen bg-gray-100">
+            {/* Left Panel - ATS Website */}
+            <div className="w-2/3 bg-white border-r border-gray-300 flex flex-col">
+                <div className="bg-gray-800 text-white p-3 flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                        <h3 className="font-semibold">Your ATS</h3>
+                        <span className="text-sm text-gray-300">{testCase.url}</span>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={refreshIframe}
+                            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm"
+                        >
+                            Refresh
+                        </button>
+                        <button
+                            onClick={openInNewWindow}
+                            className="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm"
+                        >
+                            Open in New Window
+                        </button>
+                    </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                    <div
-                        className="bg-blue-500 h-2 rounded-full transition-all"
-                        style={{ width: `${((currentStepIndex + 1) / testCase.steps.length) * 100}%` }}
+
+                <div className="flex-1 relative">
+                    <iframe
+                        key={iframeKey}
+                        src={testCase.url}
+                        className="w-full h-full border-0"
+                        title="ATS Website"
+                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
                     />
+                    <div className="absolute bottom-4 left-4 bg-yellow-100 border border-yellow-400 p-2 rounded text-sm">
+                        If the site does not load in iframe, use &quot;Open in New Window&quot; button above
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div className="space-y-4">
+            {/* Right Panel - Test Case Steps & Controls */}
+            <div className="w-1/3 bg-white flex flex-col overflow-hidden">
+                {/* Header */}
+                <div className="p-4 border-b border-gray-200">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2">{testCase.title}</h2>
+                    <div className="text-sm text-gray-600">
+                        Step {currentStepIndex + 1} of {testCase.steps.length}
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                            className="bg-blue-500 h-2 rounded-full transition-all"
+                            style={{ width: `${((currentStepIndex + 1) / testCase.steps.length) * 100}%` }}
+                        />
+                    </div>
+                </div>
+
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {/* Current Step */}
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <h3 className="font-semibold text-blue-800 mb-2">
-                            Current Step ({currentStepIndex + 1}/{testCase.steps.length})
+                            Step {currentStepIndex + 1}
                         </h3>
-                        <p className="text-blue-700 text-lg">{currentStep}</p>
+                        <p className="text-blue-700">{currentStep}</p>
                     </div>
 
-                    <div className="bg-gray-50 rounded-lg p-4">
-                        <h4 className="font-semibold text-gray-700 mb-2">Instructions:</h4>
+                    {/* Instructions */}
+                    <div className="bg-gray-50 rounded-lg p-3">
+                        <h4 className="font-semibold text-gray-700 mb-2 text-sm">Instructions:</h4>
                         <ol className="list-decimal list-inside text-sm text-gray-600 space-y-1">
-                            <li>Perform the step above in your browser</li>
-                            <li>Click Capture Screenshot when ready</li>
-                            <li>Mark if the step worked as expected</li>
-                            <li>Move to next step or finish review</li>
+                            <li>Perform the step in the ATS (left side)</li>
+                            <li>Click Capture Screenshot</li>
+                            <li>Select the ATS browser window/tab</li>
+                            <li>Mark pass/fail and continue</li>
                         </ol>
                     </div>
 
-                    <div className="bg-gray-50 rounded-lg p-4">
-                        <h4 className="font-semibold text-gray-700 mb-2">Target URL:</h4>
-                        <a
-                            href={testCase.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline break-all"
-                        >
-                            {testCase.url}
-                        </a>
-                    </div>
+                    {/* Screenshot Button */}
+                    <button
+                        onClick={captureScreenshot}
+                        disabled={isCapturing}
+                        className={`w-full py-3 px-4 rounded-lg font-semibold ${isCapturing
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-blue-500 hover:bg-blue-600 text-white'
+                            }`}
+                    >
+                        {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
+                    </button>
 
-                    <div className="space-y-3">
-                        <button
-                            onClick={captureScreenshot}
-                            disabled={isCapturing}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold ${isCapturing
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    : 'bg-blue-500 hover:bg-blue-600 text-white'
-                                }`}
-                        >
-                            {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
-                        </button>
-
-                        {getCurrentScreenshot() && (
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => markStepResult('pass')}
-                                    className={`flex-1 py-2 px-3 rounded ${stepResults[currentStepIndex] === 'pass'
-                                            ? 'bg-green-500 text-white'
-                                            : 'bg-green-100 text-green-700 hover:bg-green-200'
-                                        }`}
-                                >
-                                    Step Passed
-                                </button>
-                                <button
-                                    onClick={() => markStepResult('fail')}
-                                    className={`flex-1 py-2 px-3 rounded ${stepResults[currentStepIndex] === 'fail'
-                                            ? 'bg-red-500 text-white'
-                                            : 'bg-red-100 text-red-700 hover:bg-red-200'
-                                        }`}
-                                >
-                                    Step Failed
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div>
-                    <h3 className="font-semibold text-gray-700 mb-3">
-                        Screenshot - Step {currentStepIndex + 1}
-                    </h3>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg min-h-96 flex items-center justify-center">
-                        {getCurrentScreenshot() ? (
-                            // eslint-disable-next-line @next/next/no-img-element
+                    {/* Screenshot Preview */}
+                    {getCurrentScreenshot() && (
+                        <div className="border rounded-lg p-2">
+                            <div className="text-sm font-medium text-gray-700 mb-2">Screenshot:</div>
                             <img
                                 src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
                                 alt={`Step ${currentStepIndex + 1}`}
-                                className="max-w-full max-h-96 object-contain rounded shadow-sm"
+                                className="w-full rounded border"
                             />
-                        ) : (
-                            <div className="text-gray-500 text-center">
-                                <div className="text-4xl mb-2">Camera Icon</div>
-                                <div>No screenshot captured yet</div>
-                                <div className="text-sm">Click Capture Screenshot after performing the step</div>
-                            </div>
-                        )}
+                        </div>
+                    )}
+
+                    {/* Pass/Fail Buttons */}
+                    {getCurrentScreenshot() && (
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => markStepResult('pass')}
+                                className={`flex-1 py-2 px-3 rounded ${stepResults[currentStepIndex] === 'pass'
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                    }`}
+                            >
+                                Pass
+                            </button>
+                            <button
+                                onClick={() => markStepResult('fail')}
+                                className={`flex-1 py-2 px-3 rounded ${stepResults[currentStepIndex] === 'fail'
+                                        ? 'bg-red-500 text-white'
+                                        : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                    }`}
+                            >
+                                Fail
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Step Indicators */}
+                    <div className="flex gap-1 justify-center py-2">
+                        {testCase.steps.map((step, index) => (
+                            <div
+                                key={index}
+                                className={`w-3 h-3 rounded-full ${index === currentStepIndex
+                                        ? 'bg-blue-500'
+                                        : stepResults[index] === 'pass'
+                                            ? 'bg-green-500'
+                                            : stepResults[index] === 'fail'
+                                                ? 'bg-red-500'
+                                                : 'bg-gray-300'
+                                    }`}
+                                title={step}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Notes */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Notes (optional)
+                        </label>
+                        <textarea
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded text-sm"
+                            rows={3}
+                            placeholder="Add any observations..."
+                        />
                     </div>
                 </div>
-            </div>
 
-            <div className="flex justify-between items-center mb-6">
-                <button
-                    onClick={prevStep}
-                    disabled={isFirstStep}
-                    className={`px-4 py-2 rounded ${isFirstStep
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
-                        }`}
-                >
-                    Previous Step
-                </button>
-
-                <div className="flex gap-1">
-                    {testCase.steps.map((step, index) => (  // FIXED: Added step variable to use it
-                        <div
-                            key={index}
-                            className={`w-3 h-3 rounded-full ${index === currentStepIndex
-                                    ? 'bg-blue-500'
-                                    : stepResults[index] === 'pass'
-                                        ? 'bg-green-500'
-                                        : stepResults[index] === 'fail'
-                                            ? 'bg-red-500'
-                                            : 'bg-gray-300'
+                {/* Footer - Navigation & Actions */}
+                <div className="border-t border-gray-200 p-4 space-y-3">
+                    {/* Navigation */}
+                    <div className="flex justify-between">
+                        <button
+                            onClick={prevStep}
+                            disabled={isFirstStep}
+                            className={`px-4 py-2 rounded ${isFirstStep
+                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                    : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
                                 }`}
-                            title={step}
-                        />
-                    ))}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            onClick={nextStep}
+                            disabled={isLastStep}
+                            className={`px-4 py-2 rounded ${isLastStep
+                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                    : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                                }`}
+                        >
+                            Next
+                        </button>
+                    </div>
+
+                    {/* Final Decision */}
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => handleFinalDecision('rejected')}
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded font-semibold"
+                        >
+                            Reject
+                        </button>
+                        <button
+                            onClick={() => handleFinalDecision('approved')}
+                            className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded font-semibold"
+                        >
+                            Approve
+                        </button>
+                    </div>
                 </div>
-
-                <button
-                    onClick={nextStep}
-                    disabled={isLastStep}
-                    className={`px-4 py-2 rounded ${isLastStep
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
-                        }`}
-                >
-                    Next Step
-                </button>
-            </div>
-
-            <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Review Notes (optional)
-                </label>
-                <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg"
-                    rows={3}
-                    placeholder="Add any notes about discrepancies, issues, or observations..."
-                />
-            </div>
-
-            <div className="flex justify-center space-x-4">
-                <button
-                    onClick={() => handleFinalDecision('rejected')}
-                    className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-lg font-semibold"
-                >
-                    Reject Test Case
-                </button>
-                <button
-                    onClick={() => handleFinalDecision('approved')}
-                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold"
-                >
-                    Approve Test Case
-                </button>
             </div>
         </div>
     );

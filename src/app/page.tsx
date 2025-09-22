@@ -17,7 +17,7 @@ export default function Home() {
         setReviewedCount(0)
     }
 
-    const handleStatusChange = (status: 'approved' | 'rejected') => {  // FIXED: Removed unused notes parameter
+    const handleStatusChange = (status: 'approved' | 'rejected') => {
         if (selectedCaseIndex === null) return
 
         const updatedCases = [...testCases]
@@ -77,20 +77,10 @@ export default function Home() {
     }
 
     if (selectedCaseIndex !== null) {
-        return (
-            <div className="min-h-screen bg-gray-50 p-8">
-                <button
-                    onClick={() => setSelectedCaseIndex(null)}
-                    className="mb-4 text-blue-600 hover:text-blue-800"
-                >
-                    &lt; Back to Test Case List
-                </button>
-                <TestCaseViewer
-                    testCase={testCases[selectedCaseIndex]}
-                    onStatusChange={handleStatusChange}
-                />
-            </div>
-        )
+        return <TestCaseViewer
+            testCase={testCases[selectedCaseIndex]}
+            onStatusChange={handleStatusChange}
+        />
     }
 
     return (
