@@ -231,7 +231,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         <img
                             src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
                             alt={`Step ${currentStepIndex + 1}`}
-                            className="w-full max-h-64 object-contain rounded border"  // Changed: added max-h-64
+                            className="w-full max-h-[500px] object-contain rounded border"
                         />
                     </div>
                 )}
