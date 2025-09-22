@@ -8,7 +8,7 @@ export default function Home() {
     const [testCases, setTestCases] = useState<TestCase[]>([])
     const [selectedCaseIndex, setSelectedCaseIndex] = useState<number | null>(null)
     const [reviewedCount, setReviewedCount] = useState(0)
-    const [atsUrl, setAtsUrl] = useState('https://your-company.isolved.com')
+    const [atsUrl, setAtsUrl] = useState('https://admin.applicantpro.com')
 
     const handleTestCasesUploaded = (cases: TestCase[]) => {
         const casesWithUrl = cases.map(tc => ({ ...tc, url: atsUrl }))
