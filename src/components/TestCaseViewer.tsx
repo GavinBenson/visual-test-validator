@@ -26,7 +26,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     useEffect(() => {
         const screenWidth = window.screen.availWidth;
         const screenHeight = window.screen.availHeight;
-        const atsWidth = Math.floor(screenWidth * 0.6);
+        const atsWidth = Math.floor(screenWidth * 0.5);
 
         const popup = window.open(
             testCase.url,
@@ -70,7 +70,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
         } else {
             const screenWidth = window.screen.availWidth;
             const screenHeight = window.screen.availHeight;
-            const atsWidth = Math.floor(screenWidth * 0.6);
+            const atsWidth = Math.floor(screenWidth * 0.5);
 
             const popup = window.open(
                 testCase.url,
