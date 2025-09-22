@@ -210,56 +210,19 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 </div>
 
                 {Object.keys(stepResults).length < testCase.steps.length ? (
-                    <>
-                        <button
-                            onClick={captureScreenshot}
-                            disabled={isCapturing}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold mb-4 ${isCapturing
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    : 'bg-blue-500 hover:bg-blue-600 text-white'
-                                }`}
-                        >
-                            {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
-                        </button>
-
-                        {getCurrentScreenshot() && (
-                            <div className="bg-white rounded-lg shadow-lg p-3 mb-4">
-                                <h3 className="font-semibold text-gray-700 mb-2 text-sm">Screenshot:</h3>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
-                                    alt={`Step ${currentStepIndex + 1}`}
-                                    className="w-full max-h-[500px] object-contain rounded border"
-                                />
-                            </div>
-                        )}
-
-                        {getCurrentScreenshot() && (
-                            <div className="flex gap-2 mb-4">
-                                <button
-                                    onClick={() => markStepResult('fail')}
-                                    className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'fail'
-                                            ? 'bg-red-500 text-white'
-                                            : 'bg-red-100 text-red-700 hover:bg-red-200'
-                                        }`}
-                                >
-                                    Fail
-                                </button>
-                                <button
-                                    onClick={() => markStepResult('pass')}
-                                    className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'pass'
-                                            ? 'bg-green-500 text-white'
-                                            : 'bg-green-100 text-green-700 hover:bg-green-200'
-                                        }`}
-                                >
-                                    Pass
-                                </button>
-                            </div>
-                        )}
-                    </>
+                    <button
+                        onClick={captureScreenshot}
+                        disabled={isCapturing}
+                        className={`w-full py-3 px-4 rounded-lg font-semibold mb-4 ${isCapturing
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-blue-500 hover:bg-blue-600 text-white'
+                            }`}
+                    >
+                        {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
+                    </button>
                 ) : (
                     <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6 mb-4">
-                        <h3 className="font-semibold text-yellow-900 mb-4 text-center">
+                        <h3 className="font-semibold text-yellow-900 mb-4 text-center text-lg">
                             All steps reviewed! Make your final decision:
                         </h3>
                         <div className="flex gap-3">
@@ -276,6 +239,41 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                                 Approve Test Case
                             </button>
                         </div>
+                    </div>
+                )}
+
+                {getCurrentScreenshot() && (
+                    <div className="bg-white rounded-lg shadow-lg p-3 mb-4">
+                        <h3 className="font-semibold text-gray-700 mb-2 text-sm">Screenshot:</h3>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
+                            alt={`Step ${currentStepIndex + 1}`}
+                            className="w-full max-h-[500px] object-contain rounded border"
+                        />
+                    </div>
+                )}
+
+                {getCurrentScreenshot() && (
+                    <div className="flex gap-2 mb-4">
+                        <button
+                            onClick={() => markStepResult('fail')}
+                            className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'fail'
+                                    ? 'bg-red-500 text-white'
+                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                }`}
+                        >
+                            Fail
+                        </button>
+                        <button
+                            onClick={() => markStepResult('pass')}
+                            className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'pass'
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                }`}
+                        >
+                            Pass
+                        </button>
                     </div>
                 )}
 
