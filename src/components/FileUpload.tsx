@@ -121,7 +121,7 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     <p>Expected CSV format:</p>
                     <code className="block bg-gray-100 p-2 mt-1 text-xs">
                         id,title,steps,url<br />
-                        1,"Login Test","Step 1\nStep 2","https://example.com"
+                        1,&quot;Login Test&quot;,&quot;Step 1\nStep 2&quot;,&quot;https://example.com&quot;
                     </code>
                 </div>
             </div>
