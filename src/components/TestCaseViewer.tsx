@@ -239,15 +239,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 {getCurrentScreenshot() && (
                     <div className="flex gap-2 mb-4">
                         <button
-                            onClick={() => markStepResult('pass')}
-                            className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'pass'
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
-                                }`}
-                        >
-                            Pass
-                        </button>
-                        <button
                             onClick={() => markStepResult('fail')}
                             className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'fail'
                                     ? 'bg-red-500 text-white'
@@ -255,6 +246,15 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                                 }`}
                         >
                             Fail
+                        </button>
+                        <button
+                            onClick={() => markStepResult('pass')}
+                            className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'pass'
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                }`}
+                        >
+                            Pass
                         </button>
                     </div>
                 )}
