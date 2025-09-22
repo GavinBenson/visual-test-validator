@@ -43,7 +43,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     }, [testCase.url]);
 
     useEffect(() => {
-        // Load existing data if it exists
         if (testCase.notes) {
             setNotes(testCase.notes);
         } else {
@@ -62,7 +61,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
             setScreenshots([]);
         }
     }, [testCase]);
-
 
     const openAtsWindow = () => {
         if (atsWindow && !atsWindow.closed) {
@@ -158,14 +156,12 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
             finalNotes += `\n\nFailed steps: ${failedSteps.join(', ')}`;
         }
 
-        // Pass all the data back
         onStatusChange(decision, finalNotes, stepResults, screenshots);
     };
 
     return (
         <div className="h-screen bg-gray-50 overflow-y-auto">
             <div className="max-w-full p-4">
-
                 <div className="bg-white rounded-lg shadow-lg p-4 mb-4 sticky top-0 z-10">
                     <h2 className="text-xl font-semibold text-gray-800 mb-3">{testCase.title}</h2>
 
@@ -213,49 +209,73 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     <p className="text-blue-700">{currentStep}</p>
                 </div>
 
-                <button
-                    onClick={captureScreenshot}
-                    disabled={isCapturing}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold mb-4 ${isCapturing
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-blue-500 hover:bg-blue-600 text-white'
-                        }`}
-                >
-                    {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
-                </button>
-
-                {getCurrentScreenshot() && (
-                    <div className="bg-white rounded-lg shadow-lg p-3 mb-4">
-                        <h3 className="font-semibold text-gray-700 mb-2 text-sm">Screenshot:</h3>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
-                            alt={`Step ${currentStepIndex + 1}`}
-                            className="w-full max-h-[500px] object-contain rounded border"
-                        />
-                    </div>
-                )}
-
-                {getCurrentScreenshot() && (
-                    <div className="flex gap-2 mb-4">
+                {Object.keys(stepResults).length < testCase.steps.length ? (
+                    <>
                         <button
-                            onClick={() => markStepResult('fail')}
-                            className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'fail'
-                                    ? 'bg-red-500 text-white'
-                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
+                            onClick={captureScreenshot}
+                            disabled={isCapturing}
+                            className={`w-full py-3 px-4 rounded-lg font-semibold mb-4 ${isCapturing
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    : 'bg-blue-500 hover:bg-blue-600 text-white'
                                 }`}
                         >
-                            Fail
+                            {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
                         </button>
-                        <button
-                            onClick={() => markStepResult('pass')}
-                            className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'pass'
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
-                                }`}
-                        >
-                            Pass
-                        </button>
+
+                        {getCurrentScreenshot() && (
+                            <div className="bg-white rounded-lg shadow-lg p-3 mb-4">
+                                <h3 className="font-semibold text-gray-700 mb-2 text-sm">Screenshot:</h3>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
+                                    alt={`Step ${currentStepIndex + 1}`}
+                                    className="w-full max-h-[500px] object-contain rounded border"
+                                />
+                            </div>
+                        )}
+
+                        {getCurrentScreenshot() && (
+                            <div className="flex gap-2 mb-4">
+                                <button
+                                    onClick={() => markStepResult('fail')}
+                                    className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'fail'
+                                            ? 'bg-red-500 text-white'
+                                            : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                        }`}
+                                >
+                                    Fail
+                                </button>
+                                <button
+                                    onClick={() => markStepResult('pass')}
+                                    className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'pass'
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                        }`}
+                                >
+                                    Pass
+                                </button>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6 mb-4">
+                        <h3 className="font-semibold text-yellow-900 mb-4 text-center">
+                            All steps reviewed! Make your final decision:
+                        </h3>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => handleFinalDecision('rejected')}
+                                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-4 rounded-lg font-semibold text-lg"
+                            >
+                                Reject Test Case
+                            </button>
+                            <button
+                                onClick={() => handleFinalDecision('approved')}
+                                className="flex-1 bg-green-500 hover:bg-green-600 text-white py-4 rounded-lg font-semibold text-lg"
+                            >
+                                Approve Test Case
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -295,24 +315,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         placeholder="Add observations..."
                     />
                 </div>
-
-                {/* Final Decision only show when all steps have been reviewed */}
-                {Object.keys(stepResults).length === testCase.steps.length && (
-                    <div className="flex gap-3 pb-4">
-                        <button
-                            onClick={() => handleFinalDecision('rejected')}
-                            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-semibold"
-                        >
-                            Reject
-                        </button>
-                        <button
-                            onClick={() => handleFinalDecision('approved')}
-                            className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold"
-                        >
-                            Approve
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     );
