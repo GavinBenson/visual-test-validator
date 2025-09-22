@@ -41,11 +41,11 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
 
         return () => {
             // Clean up on unmount
-            if (atsWindow && !atsWindow.closed) {
-                atsWindow.close();
+            if (popup && !popup.closed) {
+                popup.close();
             }
         };
-    }, []);
+    }, [testCase.url]); // Fixed dependency array
 
     const openAtsWindow = () => {
         if (atsWindow && !atsWindow.closed) {
@@ -67,11 +67,9 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const captureScreenshot = async () => {
         setIsCapturing(true);
 
-        // Don't switch focus - keep validator window active
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: true,
-                preferCurrentTab: false
+                video: true  // Removed preferCurrentTab - not a valid option
             });
 
             const video = document.createElement('video');
@@ -120,7 +118,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const nextStep = () => {
         if (!isLastStep) {
             setCurrentStepIndex(prev => prev + 1);
-            // Keep focus on validator
             window.focus();
         }
     };
@@ -128,7 +125,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const prevStep = () => {
         if (!isFirstStep) {
             setCurrentStepIndex(prev => prev - 1);
-            // Keep focus on validator
             window.focus();
         }
     };
@@ -230,6 +226,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 {getCurrentScreenshot() && (
                     <div className="bg-white rounded-lg shadow-lg p-3 mb-4">
                         <h3 className="font-semibold text-gray-700 mb-2 text-sm">Screenshot:</h3>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
                             alt={`Step ${currentStepIndex + 1}`}
