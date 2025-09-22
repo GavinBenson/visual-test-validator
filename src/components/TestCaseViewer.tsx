@@ -13,21 +13,17 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const [notes, setNotes] = useState('');
     const [stepResults, setStepResults] = useState<{ [key: number]: 'pass' | 'fail' | 'pending' }>({});
     const [atsWindow, setAtsWindow] = useState<Window | null>(null);
+    const [showSetupInstructions, setShowSetupInstructions] = useState(true);
 
     const currentStep = testCase.steps[currentStepIndex];
     const isLastStep = currentStepIndex === testCase.steps.length - 1;
     const isFirstStep = currentStepIndex === 0;
 
     useEffect(() => {
-        // Get screen dimensions
         const screenWidth = window.screen.availWidth;
         const screenHeight = window.screen.availHeight;
+        const atsWidth = Math.floor(screenWidth * 0.6);
 
-        // Calculate positions for side-by-side layout
-        const atsWidth = Math.floor(screenWidth * 0.6); // 60% for ATS
-        const validatorWidth = Math.floor(screenWidth * 0.4); // 40% for validator
-
-        // Position ATS on the left
         const popup = window.open(
             testCase.url,
             'ats-window',
@@ -35,17 +31,12 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
         );
         setAtsWindow(popup);
 
-        // Position validator on the right
-        window.moveTo(atsWidth, 0);
-        window.resizeTo(validatorWidth, screenHeight);
-
         return () => {
-            // Clean up on unmount
             if (popup && !popup.closed) {
                 popup.close();
             }
         };
-    }, [testCase.url]); // Fixed dependency array
+    }, [testCase.url]);
 
     const openAtsWindow = () => {
         if (atsWindow && !atsWindow.closed) {
@@ -69,7 +60,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
 
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: true  // Removed preferCurrentTab - not a valid option
+                video: true
             });
 
             const video = document.createElement('video');
@@ -98,7 +89,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 stream.getTracks().forEach(track => track.stop());
                 setIsCapturing(false);
 
-                // Keep validator focused
                 window.focus();
             });
         } catch (error) {
@@ -118,14 +108,12 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const nextStep = () => {
         if (!isLastStep) {
             setCurrentStepIndex(prev => prev + 1);
-            window.focus();
         }
     };
 
     const prevStep = () => {
         if (!isFirstStep) {
             setCurrentStepIndex(prev => prev - 1);
-            window.focus();
         }
     };
 
@@ -149,7 +137,29 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     return (
         <div className="h-screen bg-gray-50 overflow-y-auto">
             <div className="max-w-full p-4">
-                {/* Header */}
+                {/* Setup Instructions Banner */}
+                {showSetupInstructions && (
+                    <div className="bg-blue-600 text-white p-4 rounded-lg mb-4">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h3 className="font-semibold mb-2">Quick Setup for Best Experience:</h3>
+                                <ol className="text-sm space-y-1 list-decimal list-inside">
+                                    <li>The ATS window opened in a popup - position it on the LEFT side of your screen</li>
+                                    <li>Drag THIS window to the RIGHT side of your screen</li>
+                                    <li>Now you can see both windows side-by-side!</li>
+                                </ol>
+                            </div>
+                            <button
+                                onClick={() => setShowSetupInstructions(false)}
+                                className="text-white hover:text-gray-200 text-xl"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Rest of the component remains the same... */}
                 <div className="bg-white rounded-lg shadow-lg p-4 mb-4 sticky top-0 z-10">
                     <h2 className="text-xl font-semibold text-gray-800 mb-3">{testCase.title}</h2>
 
@@ -173,7 +183,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     </div>
                 </div>
 
-                {/* Step Indicators */}
                 <div className="flex gap-1 justify-center mb-4 flex-wrap">
                     {testCase.steps.map((step, index) => (
                         <div
@@ -191,7 +200,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     ))}
                 </div>
 
-                {/* Current Step */}
                 <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
                     <h3 className="font-semibold text-blue-800 mb-2 text-sm">
                         Step {currentStepIndex + 1}
@@ -199,18 +207,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     <p className="text-blue-700">{currentStep}</p>
                 </div>
 
-                {/* Instructions */}
-                <div className="bg-gray-50 rounded-lg p-3 mb-4 text-sm">
-                    <h4 className="font-semibold text-gray-700 mb-2">Instructions:</h4>
-                    <ol className="list-decimal list-inside text-gray-600 space-y-1">
-                        <li>Perform step in ATS window (left side)</li>
-                        <li>Click Capture Screenshot</li>
-                        <li>Select ATS window in popup</li>
-                        <li>Mark Pass/Fail and continue</li>
-                    </ol>
-                </div>
-
-                {/* Capture Button */}
                 <button
                     onClick={captureScreenshot}
                     disabled={isCapturing}
@@ -222,7 +218,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
                 </button>
 
-                {/* Screenshot Preview */}
                 {getCurrentScreenshot() && (
                     <div className="bg-white rounded-lg shadow-lg p-3 mb-4">
                         <h3 className="font-semibold text-gray-700 mb-2 text-sm">Screenshot:</h3>
@@ -235,7 +230,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     </div>
                 )}
 
-                {/* Pass/Fail Buttons */}
                 {getCurrentScreenshot() && (
                     <div className="flex gap-2 mb-4">
                         <button
@@ -259,7 +253,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     </div>
                 )}
 
-                {/* Navigation */}
                 <div className="flex justify-between mb-4">
                     <button
                         onClick={prevStep}
@@ -284,7 +277,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     </button>
                 </div>
 
-                {/* Notes */}
                 <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Notes (optional)
@@ -298,7 +290,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     />
                 </div>
 
-                {/* Final Decision */}
                 <div className="flex gap-3 pb-4">
                     <button
                         onClick={() => handleFinalDecision('rejected')}
