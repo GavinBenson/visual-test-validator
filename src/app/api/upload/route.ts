@@ -17,18 +17,39 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid CSV format' }, { status: 400 });
         }
 
+        const headers = lines[0].split(',');
         const testCases: TestCase[] = [];
 
+        // Parse Qase CSV format
         for (let i = 1; i < lines.length; i++) {
             const values = parseCSVLine(lines[i]);
+            const row: any = {};
 
-            if (values.length >= 4) {
+            headers.forEach((header, index) => {
+                row[header.trim()] = values[index] || '';
+            });
+
+            // Only process rows that have actual test case data (not suite headers)
+            if (row['v2.id'] && row.title && row['v2.id'].trim() !== '') {
+                // Combine steps and expected results
+                const stepActions = row.steps_actions ? row.steps_actions.split('\n').filter((s: string) => s.trim()) : [];
+                const stepResults = row.steps_result ? row.steps_result.split('\n').filter((s: string) => s.trim()) : [];
+
+                const combinedSteps = stepActions.map((action: string, idx: number) => {
+                    const cleanAction = action.replace(/^\d+\.\s*"?|"$/g, '').trim();
+                    const result = stepResults[idx] ? stepResults[idx].replace(/^\d+\.\s*"?|"$/g, '').trim() : '';
+                    return result ? `${cleanAction} -> Expected: ${result}` : cleanAction;
+                });
+
                 testCases.push({
-                    id: values[0] || `case-${i}`,
-                    title: values[1] || `Test Case ${i}`,
-                    steps: values[2] ? values[2].split('\\n').filter(s => s.trim()) : ['No steps defined'],
-                    url: values[3] || 'https://demo.isolved.com',
-                    status: 'pending'
+                    id: row['v2.id'].toString(),
+                    title: row.title,
+                    steps: combinedSteps.length > 0 ? combinedSteps : ['No steps defined'],
+                    url: 'https://your-ats-domain.com',
+                    status: 'pending',
+                    description: row.description || '',
+                    preconditions: row.preconditions || '',
+                    postconditions: row.postconditions || ''
                 });
             }
         }

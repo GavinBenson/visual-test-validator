@@ -4,10 +4,13 @@ export interface TestCase {
     steps: string[];
     url: string;
     status: 'pending' | 'approved' | 'rejected';
+    description?: string;
+    preconditions?: string;
+    postconditions?: string;
 }
 
 export interface Screenshot {
     step: string;
     screenshot: string;
-    stepIndex: number;  // Remove the optional ? to make it required
+    stepIndex: number;
 }

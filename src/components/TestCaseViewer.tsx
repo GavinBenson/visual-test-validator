@@ -20,7 +20,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const captureScreenshot = async () => {
         setIsCapturing(true);
         try {
-            // Use the Screen Capture API
             const stream = await navigator.mediaDevices.getDisplayMedia({
                 video: true
             });
@@ -43,7 +42,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     ...prev.filter(s => s.stepIndex !== currentStepIndex),
                     {
                         step: currentStep,
-                        screenshot: screenshot.split(',')[1], // Remove data:image/png;base64,
+                        screenshot: screenshot.split(',')[1],
                         stepIndex: currentStepIndex
                     }
                 ]);
@@ -110,7 +109,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                {/* Left Panel - Instructions */}
                 <div className="space-y-4">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <h3 className="font-semibold text-blue-800 mb-2">
@@ -141,7 +139,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         </a>
                     </div>
 
-                    {/* Step Controls */}
                     <div className="space-y-3">
                         <button
                             onClick={captureScreenshot}
@@ -151,7 +148,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                                     : 'bg-blue-500 hover:bg-blue-600 text-white'
                                 }`}
                         >
-                            {isCapturing ? ' Capturing...' : ' Capture Screenshot'}
+                            {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
                         </button>
 
                         {getCurrentScreenshot() && (
@@ -163,7 +160,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                                             : 'bg-green-100 text-green-700 hover:bg-green-200'
                                         }`}
                                 >
-                                     Step Passed
+                                    Step Passed
                                 </button>
                                 <button
                                     onClick={() => markStepResult('fail')}
@@ -172,14 +169,13 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                                             : 'bg-red-100 text-red-700 hover:bg-red-200'
                                         }`}
                                 >
-                                     Step Failed
+                                    Step Failed
                                 </button>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Right Panel - Screenshot */}
                 <div>
                     <h3 className="font-semibold text-gray-700 mb-3">
                         Screenshot - Step {currentStepIndex + 1}
@@ -193,7 +189,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                             />
                         ) : (
                             <div className="text-gray-500 text-center">
-                                <div className="text-4xl mb-2"></div>
+                                <div className="text-4xl mb-2">Camera Icon</div>
                                 <div>No screenshot captured yet</div>
                                 <div className="text-sm">Click Capture Screenshot after performing the step</div>
                             </div>
@@ -202,7 +198,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 </div>
             </div>
 
-            {/* Navigation */}
             <div className="flex justify-between items-center mb-6">
                 <button
                     onClick={prevStep}
@@ -212,7 +207,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                             : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
                         }`}
                 >
-                     Previous Step
+                    Previous Step
                 </button>
 
                 <div className="flex gap-1">
@@ -239,11 +234,10 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                             : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
                         }`}
                 >
-                    Next Step 
+                    Next Step
                 </button>
             </div>
 
-            {/* Notes */}
             <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                     Review Notes (optional)
@@ -257,19 +251,18 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 />
             </div>
 
-            {/* Final Decision */}
             <div className="flex justify-center space-x-4">
                 <button
                     onClick={() => handleFinalDecision('rejected')}
                     className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-lg font-semibold"
                 >
-                     Reject Test Case
+                    Reject Test Case
                 </button>
                 <button
                     onClick={() => handleFinalDecision('approved')}
                     className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold"
                 >
-                     Approve Test Case
+                    Approve Test Case
                 </button>
             </div>
         </div>

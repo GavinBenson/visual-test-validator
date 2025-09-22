@@ -6,40 +6,33 @@ import { TestCase } from '@/types'
 
 export default function Home() {
     const [testCases, setTestCases] = useState<TestCase[]>([])
-    const [currentIndex, setCurrentIndex] = useState(0)
+    const [selectedCaseIndex, setSelectedCaseIndex] = useState<number | null>(null)
     const [reviewedCount, setReviewedCount] = useState(0)
+    const [atsUrl, setAtsUrl] = useState('https://your-company.isolved.com')
 
     const handleTestCasesUploaded = (cases: TestCase[]) => {
-        setTestCases(cases)
-        setCurrentIndex(0)
+        const casesWithUrl = cases.map(tc => ({ ...tc, url: atsUrl }))
+        setTestCases(casesWithUrl)
+        setSelectedCaseIndex(null)
         setReviewedCount(0)
     }
 
-    const handleStatusChange = (status: 'approved' | 'rejected') => {
-        if (testCases.length === 0) return
+    const handleStatusChange = (status: 'approved' | 'rejected', notes?: string) => {
+        if (selectedCaseIndex === null) return
 
         const updatedCases = [...testCases]
-        updatedCases[currentIndex].status = status
+        updatedCases[selectedCaseIndex].status = status
         setTestCases(updatedCases)
         setReviewedCount(prev => prev + 1)
 
-        // Move to next test case
-        if (currentIndex < testCases.length - 1) {
-            setCurrentIndex(prev => prev + 1)
-        }
+        setSelectedCaseIndex(null)
     }
 
-    const navigateToCase = (index: number) => {
-        setCurrentIndex(index)
-    }
-
-    const exportApproved = async () => {
-        const approved = testCases.filter(tc => tc.status === 'approved')
-
+    const exportResults = async () => {
         const csv = [
-            'id,title,steps,url,status',
-            ...approved.map(tc =>
-                `"${tc.id}","${tc.title}","${tc.steps.join('\\n')}","${tc.url}","${tc.status}"`
+            'id,title,status,notes',
+            ...testCases.map(tc =>
+                `"${tc.id}","${tc.title}","${tc.status}",""`
             )
         ].join('\n')
 
@@ -47,78 +40,121 @@ export default function Home() {
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = 'approved-test-cases.csv'
+        a.download = 'test-case-review-results.csv'
         a.click()
     }
 
-    const currentTestCase = testCases[currentIndex]
+    if (testCases.length === 0) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-8">
+                <div className="max-w-4xl mx-auto">
+                    <header className="text-center mb-8">
+                        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+                            Visual Test Case Validator
+                        </h1>
+                        <p className="text-gray-600">
+                            Review Qase test cases with interactive screenshot validation
+                        </p>
+                    </header>
+
+                    <div className="bg-white rounded-lg shadow p-6 mb-6">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Your Company ATS URL
+                        </label>
+                        <input
+                            type="url"
+                            value={atsUrl}
+                            onChange={(e) => setAtsUrl(e.target.value)}
+                            placeholder="https://your-company.isolved.com"
+                            className="w-full p-3 border border-gray-300 rounded-lg"
+                        />
+                    </div>
+
+                    <FileUpload onTestCasesUploaded={handleTestCasesUploaded} />
+                </div>
+            </div>
+        )
+    }
+
+    if (selectedCaseIndex !== null) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-8">
+                <button
+                    onClick={() => setSelectedCaseIndex(null)}
+                    className="mb-4 text-blue-600 hover:text-blue-800"
+                >
+                    &lt; Back to Test Case List
+                </button>
+                <TestCaseViewer
+                    testCase={testCases[selectedCaseIndex]}
+                    onStatusChange={handleStatusChange}
+                />
+            </div>
+        )
+    }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="container mx-auto px-4 py-8">
+        <div className="min-h-screen bg-gray-50 p-8">
+            <div className="max-w-6xl mx-auto">
                 <header className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                        Visual Test Case Validator
+                    <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                        Select Test Case to Review
                     </h1>
                     <p className="text-gray-600">
-                        Review AI-generated test cases with visual validation
+                        {testCases.length} test cases loaded - {reviewedCount} reviewed
                     </p>
                 </header>
 
-                {testCases.length === 0 ? (
-                    <FileUpload onTestCasesUploaded={handleTestCasesUploaded} />
-                ) : (
-                    <>
-                        {/* Progress Bar */}
-                        <div className="mb-6">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm text-gray-600">
-                                    Progress: {reviewedCount}/{testCases.length} reviewed
-                                </span>
-                                <button
-                                    onClick={exportApproved}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600"
-                                >
-                                    Export Approved
-                                </button>
+                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-600">
+                            Progress: {reviewedCount}/{testCases.length} reviewed
+                        </span>
+                        <button
+                            onClick={exportResults}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                            Export Results
+                        </button>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                            className="bg-green-500 h-2 rounded-full transition-all"
+                            style={{ width: `${(reviewedCount / testCases.length) * 100}%` }}
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {testCases.map((tc, index) => (
+                        <div
+                            key={tc.id}
+                            className={`bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-shadow ${tc.status === 'approved' ? 'border-l-4 border-green-500' :
+                                    tc.status === 'rejected' ? 'border-l-4 border-red-500' : ''
+                                }`}
+                            onClick={() => setSelectedCaseIndex(index)}
+                        >
+                            <div className="flex justify-between items-start mb-2">
+                                <span className="text-sm font-mono text-gray-500">{tc.id}</span>
+                                {tc.status !== 'pending' && (
+                                    <span className={`text-sm px-2 py-1 rounded ${tc.status === 'approved'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
+                                        }`}>
+                                        {tc.status}
+                                    </span>
+                                )}
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div
-                                    className="bg-green-500 h-2 rounded-full transition-all"
-                                    style={{ width: `${(reviewedCount / testCases.length) * 100}%` }}
-                                />
+                            <h3 className="font-semibold text-gray-800 mb-2">{tc.title}</h3>
+                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                {tc.description}
+                            </p>
+                            <div className="text-sm text-gray-500">
+                                {tc.steps.length} steps
                             </div>
                         </div>
-
-                        {/* Navigation */}
-                        <div className="mb-4 flex gap-2 flex-wrap">
-                            {testCases.map((tc, index) => (
-                                <button
-                                    key={tc.id}
-                                    onClick={() => navigateToCase(index)}
-                                    className={`px-3 py-1 rounded text-sm ${index === currentIndex
-                                            ? 'bg-blue-500 text-white'
-                                            : tc.status === 'pending'
-                                                ? 'bg-gray-200 text-gray-700'
-                                                : tc.status === 'approved'
-                                                    ? 'bg-green-200 text-green-800'
-                                                    : 'bg-red-200 text-red-800'
-                                        }`}
-                                >
-                                    {index + 1}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Current Test Case */}
-                        {currentTestCase && (
-                            <TestCaseViewer
-                                testCase={currentTestCase}
-                                onStatusChange={handleStatusChange}
-                            />
-                        )}
-                    </>
-                )}
+                    ))}
+                </div>
             </div>
         </div>
     )
