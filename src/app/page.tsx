@@ -66,7 +66,7 @@ export default function Home() {
                             value={atsUrl}
                             onChange={(e) => setAtsUrl(e.target.value)}
                             placeholder="https://your-company.isolved.com"
-                            className="w-full p-3 border border-gray-300 rounded-lg"
+                            className="w-full p-3 border border-gray-300 rounded-lg text-gray-900"
                         />
                     </div>
 
