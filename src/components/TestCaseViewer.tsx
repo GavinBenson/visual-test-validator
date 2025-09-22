@@ -60,7 +60,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
 
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: true
+                video: true,
+                audio: false
             });
 
             const video = document.createElement('video');
