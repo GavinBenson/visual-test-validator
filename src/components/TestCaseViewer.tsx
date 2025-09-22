@@ -271,7 +271,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     <textarea
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                        className="w-full p-2 border border-gray-300 rounded text-sm text-gray-900"
                         rows={3}
                         placeholder="Add observations..."
                     />
