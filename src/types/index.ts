@@ -9,4 +9,5 @@ export interface TestCase {
 export interface Screenshot {
     step: string;
     screenshot: string;
+    stepIndex: number;  // Remove the optional ? to make it required
 }
