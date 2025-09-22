@@ -17,7 +17,7 @@ export default function Home() {
         setReviewedCount(0)
     }
 
-    const handleStatusChange = (status: 'approved' | 'rejected', notes?: string) => {
+    const handleStatusChange = (status: 'approved' | 'rejected') => {  // FIXED: Removed unused notes parameter
         if (selectedCaseIndex === null) return
 
         const updatedCases = [...testCases]

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';  // FIXED: Removed useEffect
 import { TestCase, Screenshot } from '@/types';
 
 interface TestCaseViewerProps {
@@ -82,8 +82,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
 
     const handleFinalDecision = (decision: 'approved' | 'rejected') => {
         const failedSteps = Object.entries(stepResults)
-            .filter(([_, result]) => result === 'fail')
-            .map(([index, _]) => parseInt(index) + 1);
+            .filter(([, result]) => result === 'fail')  // FIXED: Removed unused variable name
+            .map(([index]) => parseInt(index) + 1);  // FIXED: Removed unused variable name
 
         let finalNotes = notes;
         if (failedSteps.length > 0) {
@@ -182,6 +182,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     </h3>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg min-h-96 flex items-center justify-center">
                         {getCurrentScreenshot() ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                                 src={`data:image/png;base64,${getCurrentScreenshot()?.screenshot}`}
                                 alt={`Step ${currentStepIndex + 1}`}
@@ -211,7 +212,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 </button>
 
                 <div className="flex gap-1">
-                    {testCase.steps.map((_, index) => (
+                    {testCase.steps.map((step, index) => (  // FIXED: Added step variable to use it
                         <div
                             key={index}
                             className={`w-3 h-3 rounded-full ${index === currentStepIndex
@@ -222,6 +223,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                                             ? 'bg-red-500'
                                             : 'bg-gray-300'
                                 }`}
+                            title={step}
                         />
                     ))}
                 </div>

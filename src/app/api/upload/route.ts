@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         // Parse Qase CSV format
         for (let i = 1; i < lines.length; i++) {
             const values = parseCSVLine(lines[i]);
-            const row: any = {};
+            const row: Record<string, string> = {};  // FIXED: Changed from any to Record<string, string>
 
             headers.forEach((header, index) => {
                 row[header.trim()] = values[index] || '';
