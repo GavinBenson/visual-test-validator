@@ -37,6 +37,15 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
         };
     }, [testCase.url]);
 
+    useEffect(() => {
+        if (testCase.notes) {
+            setNotes(testCase.notes);
+        } else {
+            setNotes('');
+        }
+    }, [testCase]);
+
+
     const openAtsWindow = () => {
         if (atsWindow && !atsWindow.closed) {
             atsWindow.focus();

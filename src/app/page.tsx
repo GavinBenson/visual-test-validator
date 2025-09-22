@@ -17,16 +17,17 @@ export default function Home() {
         setReviewedCount(0)
     }
 
-    const handleStatusChange = (status: 'approved' | 'rejected') => {
+    const handleStatusChange = (status: 'approved' | 'rejected', notes?: string) => {
         if (selectedCaseIndex === null) return
 
         const updatedCases = [...testCases]
         const wasAlreadyReviewed = updatedCases[selectedCaseIndex].status !== 'pending'
 
         updatedCases[selectedCaseIndex].status = status
+        updatedCases[selectedCaseIndex].notes = notes  // Save the notes
+
         setTestCases(updatedCases)
 
-        // Only increment if this was previously pending
         if (!wasAlreadyReviewed) {
             setReviewedCount(prev => prev + 1)
         }
@@ -38,7 +39,7 @@ export default function Home() {
         const csv = [
             'id,title,status,notes',
             ...testCases.map(tc =>
-                `"${tc.id}","${tc.title}","${tc.status}",""`
+                `"${tc.id}","${tc.title}","${tc.status}","${tc.notes || ''}"`
             )
         ].join('\n')
 

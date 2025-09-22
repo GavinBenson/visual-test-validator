@@ -7,6 +7,7 @@ export interface TestCase {
     description?: string;
     preconditions?: string;
     postconditions?: string;
+    notes?: string;  // Add this
 }
 
 export interface Screenshot {
