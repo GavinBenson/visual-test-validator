@@ -1,0 +1,21 @@
+[33m6df0e06[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m update extension to use last selected window
+[33m58ddcc3[m debug extension
+[33m3e909ff[m updated screenshot function
+[33m475e6db[m debug extension
+[33mec2c249[m changed to using chrome extension for capturing screenshots
+[33m2409195[m Remove invalid preferCurrentTab option
+[33m83576b4[m Fix encoding issue in TestCaseViewer
+[33m8a88d41[m Trying manual windows arrangement
+[33m5ed8ab0[m Fix TypeScript errors and ESLint warnings
+[33m0ca8d43[m Auto-position windows side-by-side and keep validator focused
+[33mda3044e[m Add side-by-side layout with ATS iframe and test controls
+[33ma8a5e29[m Fix CSV parser to correctly handle multi-line quoted fields from Qase
+[33m22c2006[m Fix TypeScript and ESLint errors
+[33m0175f83[m Add Qase CSV support with interactive screenshot validation
+[33mf01277f[m Fix TypeScript errors in TestCaseViewer
+[33mb5eb158[m Add API routes for upload and screenshot functionality
+[33m0a71816[m Add complete TestCaseViewer component
+[33m49d7271[m Fix ESLint quotes error in FileUpload component
+[33mfa14489[m Add API routes and TestCaseViewer component
+[33m37683b5[m Initial Next.js setup with dependencies
+[33me3b59b1[m Initial commit
