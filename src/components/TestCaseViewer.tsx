@@ -137,7 +137,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     return (
         <div className="h-screen bg-gray-50 overflow-y-auto">
             <div className="max-w-full p-4">
-                {/* Setup Instructions Banner */}
                 {showSetupInstructions && (
                     <div className="bg-blue-600 text-white p-4 rounded-lg mb-4">
                         <div className="flex justify-between items-start">
@@ -151,15 +150,14 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                             </div>
                             <button
                                 onClick={() => setShowSetupInstructions(false)}
-                                className="text-white hover:text-gray-200 text-xl"
+                                className="text-white hover:text-gray-200 text-xl ml-4"
                             >
-                                ×
+                                X
                             </button>
                         </div>
                     </div>
                 )}
 
-                {/* Rest of the component remains the same... */}
                 <div className="bg-white rounded-lg shadow-lg p-4 mb-4 sticky top-0 z-10">
                     <h2 className="text-xl font-semibold text-gray-800 mb-3">{testCase.title}</h2>
 
