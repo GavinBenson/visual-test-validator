@@ -248,7 +248,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 ) : (
                     <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6 mb-4">
                         <h3 className="font-semibold text-yellow-900 mb-4 text-center text-lg">
-                            All steps reviewed! Make your final decision:
+                            All steps reviewed!
                         </h3>
                         <div className="flex gap-3">
                             <button
