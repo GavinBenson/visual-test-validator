@@ -6,7 +6,7 @@ import { TestCase, Screenshot } from '@/types'
 export default function Home() {
     const [testCases, setTestCases] = useState<TestCase[]>([])
     const [reviewedCount, setReviewedCount] = useState(0)
-    const [atsUrl, setAtsUrl] = useState('https://your-company.isolved.com')
+    const [atsUrl, setAtsUrl] = useState('https://admin.applicantpro.com')
 
     // Listen for messages from popup windows
     useEffect(() => {
