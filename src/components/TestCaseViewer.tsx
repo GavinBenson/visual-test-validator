@@ -132,9 +132,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
 
             // Check if this completes all steps
             if (Object.keys(updated).length === testCase.steps.length) {
-                // Scroll to top after a brief delay to show the approve/reject buttons
                 setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    document.querySelector('.sticky')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
             }
 
