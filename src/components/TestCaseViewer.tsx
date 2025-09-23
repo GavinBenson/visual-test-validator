@@ -175,6 +175,11 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
             finalNotes += `\n\nFailed steps: ${failedSteps.join(', ')}`;
         }
 
+        // Close the ATS window
+        if (atsWindow && !atsWindow.closed) {
+            atsWindow.close();
+        }
+
         onStatusChange(decision, finalNotes, stepResults, screenshots);
     };
 
