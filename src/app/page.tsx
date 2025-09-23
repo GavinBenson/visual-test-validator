@@ -105,9 +105,6 @@ export default function Home() {
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">
                         Select Test Case to Review
                     </h1>
-                    <p className="text-gray-600">
-                        {testCases.length} test cases loaded - {reviewedCount} reviewed
-                    </p>
                 </header>
 
                 <div className="bg-white rounded-lg shadow p-6 mb-6">
