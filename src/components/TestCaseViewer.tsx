@@ -124,10 +124,22 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     };
 
     const markStepResult = (result: 'pass' | 'fail') => {
-        setStepResults(prev => ({
-            ...prev,
-            [currentStepIndex]: result
-        }));
+        setStepResults(prev => {
+            const updated = {
+                ...prev,
+                [currentStepIndex]: result
+            };
+
+            // Check if this completes all steps
+            if (Object.keys(updated).length === testCase.steps.length) {
+                // Scroll to top after a brief delay to show the approve/reject buttons
+                setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 100);
+            }
+
+            return updated;
+        });
     };
 
     const nextStep = () => {
