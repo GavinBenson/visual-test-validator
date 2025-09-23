@@ -18,7 +18,7 @@ export default function Home() {
     }
 
     const handleStatusChange = (
-        status: 'approved' | 'rejected',
+        status: 'approved' | 'rejected' | 'pending',
         notes?: string,
         stepResults?: { [key: number]: 'pass' | 'fail' | 'pending' },
         screenshots?: Screenshot[]

@@ -4,7 +4,7 @@ import { TestCase, Screenshot } from '@/types';
 interface TestCaseViewerProps {
     testCase: TestCase;
     onStatusChange: (
-        status: 'approved' | 'rejected',
+        status: 'approved' | 'rejected' | 'pending', 
         notes?: string,
         stepResults?: { [key: number]: 'pass' | 'fail' | 'pending' },
         screenshots?: Screenshot[]
@@ -159,11 +159,24 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
         onStatusChange(decision, finalNotes, stepResults, screenshots);
     };
 
+    const handleBackToList = () => {
+        // Save current progress without changing status
+        onStatusChange(testCase.status, notes, stepResults, screenshots);
+    };
+
     return (
         <div className="h-screen bg-gray-50 overflow-y-auto">
             <div className="max-w-full p-4">
                 <div className="bg-white rounded-lg shadow-lg p-4 mb-4 sticky top-0 z-10">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-3">{testCase.title}</h2>
+                    <div className="flex items-center gap-3 mb-3">
+                        <button
+                            onClick={handleBackToList}
+                            className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-sm font-medium"
+                        >
+                            &lt; Back to List
+                        </button>
+                        <h2 className="text-xl font-semibold text-gray-800 flex-1">{testCase.title}</h2>
+                    </div>
 
                     <div className="flex items-center justify-between mb-3">
                         <div className="text-sm text-gray-600">
