@@ -84,13 +84,13 @@ export default function Home() {
 
                     <div className="bg-white rounded-lg shadow p-6 mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Your Company ATS URL
+                            ATS URL
                         </label>
                         <input
                             type="url"
                             value={atsUrl}
                             onChange={(e) => setAtsUrl(e.target.value)}
-                            placeholder="https://your-company.isolved.com"
+                            placeholder="https://admin.applicantpro.com"
                             className="w-full p-3 border border-gray-300 rounded-lg text-gray-900"
                         />
                     </div>
