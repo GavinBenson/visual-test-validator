@@ -184,6 +184,11 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     };
 
     const handleBackToList = () => {
+        // Close the ATS window
+        if (atsWindow && !atsWindow.closed) {
+            atsWindow.close();
+        }
+
         onStatusChange(testCase.status, notes, stepResults, screenshots);
     };
 
