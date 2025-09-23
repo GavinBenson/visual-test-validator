@@ -133,7 +133,10 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
             // Check if this completes all steps
             if (Object.keys(updated).length === testCase.steps.length) {
                 setTimeout(() => {
-                    document.querySelector('.sticky')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const container = document.querySelector('.h-screen.bg-gray-50.overflow-y-auto');
+                    if (container) {
+                        container.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
                 }, 100);
             }
 
