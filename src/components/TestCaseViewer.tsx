@@ -4,7 +4,7 @@ import { TestCase, Screenshot } from '@/types';
 interface TestCaseViewerProps {
     testCase: TestCase;
     onStatusChange: (
-        status: 'approved' | 'rejected' | 'pending', 
+        status: 'approved' | 'rejected' | 'pending',
         notes?: string,
         stepResults?: { [key: number]: 'pass' | 'fail' | 'pending' },
         screenshots?: Screenshot[]
@@ -27,7 +27,13 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
         const screenWidth = window.screen.availWidth;
         const screenHeight = window.screen.availHeight;
         const atsWidth = Math.floor(screenWidth * 0.5);
+        const validatorWidth = Math.floor(screenWidth * 0.5);
 
+        // Position this window (validator) on the right
+        window.resizeTo(validatorWidth, screenHeight);
+        window.moveTo(atsWidth, 0);
+
+        // Open ATS on the left
         const popup = window.open(
             testCase.url,
             'ats-window',
@@ -130,7 +136,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 [currentStepIndex]: result
             };
 
-            // Check if this completes all steps
             if (Object.keys(updated).length === testCase.steps.length) {
                 setTimeout(() => {
                     const container = document.querySelector('.h-screen.bg-gray-50.overflow-y-auto');
@@ -174,7 +179,6 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     };
 
     const handleBackToList = () => {
-        // Save current progress without changing status
         onStatusChange(testCase.status, notes, stepResults, screenshots);
     };
 
@@ -250,7 +254,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 ) : (
                     <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6 mb-4">
                         <h3 className="font-semibold text-yellow-900 mb-4 text-center text-lg">
-                            All steps reviewed!
+                            All steps reviewed! Make your final decision:
                         </h3>
                         <div className="flex gap-3">
                             <button

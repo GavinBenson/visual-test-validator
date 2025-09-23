@@ -1,46 +1,44 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import FileUpload from '@/components/FileUpload'
-import TestCaseViewer from '@/components/TestCaseViewer'
-import { TestCase, Screenshot } from '@/types'  // Add Screenshot here
+import { TestCase, Screenshot } from '@/types'
 
 export default function Home() {
     const [testCases, setTestCases] = useState<TestCase[]>([])
-    const [selectedCaseIndex, setSelectedCaseIndex] = useState<number | null>(null)
     const [reviewedCount, setReviewedCount] = useState(0)
-    const [atsUrl, setAtsUrl] = useState('https://admin.applicantpro.com')
+    const [atsUrl, setAtsUrl] = useState('https://your-company.isolved.com')
+
+    // Listen for messages from popup windows
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data.type === 'TEST_CASE_UPDATE') {
+                const { index, status, notes, stepResults, screenshots } = event.data;
+
+                const updatedCases = [...testCases];
+                const previousStatus = updatedCases[index].status;
+
+                updatedCases[index].status = status;
+                updatedCases[index].notes = notes;
+                updatedCases[index].stepResults = stepResults;
+                updatedCases[index].screenshots = screenshots;
+
+                setTestCases(updatedCases);
+
+                if (previousStatus === 'pending' && status !== 'pending') {
+                    setReviewedCount(prev => prev + 1);
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [testCases]);
 
     const handleTestCasesUploaded = (cases: TestCase[]) => {
         const casesWithUrl = cases.map(tc => ({ ...tc, url: atsUrl }))
         setTestCases(casesWithUrl)
-        setSelectedCaseIndex(null)
+        sessionStorage.setItem('testCases', JSON.stringify(casesWithUrl))
         setReviewedCount(0)
-    }
-
-    const handleStatusChange = (
-        status: 'approved' | 'rejected' | 'pending',
-        notes?: string,
-        stepResults?: { [key: number]: 'pass' | 'fail' | 'pending' },
-        screenshots?: Screenshot[]
-    ) => {
-        if (selectedCaseIndex === null) return
-
-        const updatedCases = [...testCases]
-        const previousStatus = updatedCases[selectedCaseIndex].status
-
-        updatedCases[selectedCaseIndex].status = status
-        updatedCases[selectedCaseIndex].notes = notes
-        updatedCases[selectedCaseIndex].stepResults = stepResults
-        updatedCases[selectedCaseIndex].screenshots = screenshots
-
-        setTestCases(updatedCases)
-
-        // Only increment if status changed from 'pending' to 'approved' or 'rejected'
-        if (previousStatus === 'pending' && status !== 'pending') {
-            setReviewedCount(prev => prev + 1)
-        }
-
-        setSelectedCaseIndex(null)
     }
 
     const exportResults = async () => {
@@ -59,6 +57,18 @@ export default function Home() {
         a.click()
     }
 
+    const openTestCaseReview = (index: number) => {
+        const screenWidth = window.screen.availWidth;
+        const screenHeight = window.screen.availHeight;
+        const validatorWidth = Math.floor(screenWidth * 0.5);
+
+        window.open(
+            `/review/${index}`,
+            `validator-${index}`,
+            `width=${validatorWidth},height=${screenHeight},left=${validatorWidth},top=0,scrollbars=yes`
+        );
+    }
+
     if (testCases.length === 0) {
         return (
             <div className="min-h-screen bg-gray-50 p-8">
@@ -74,13 +84,13 @@ export default function Home() {
 
                     <div className="bg-white rounded-lg shadow p-6 mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            ATS URL
+                            Your Company ATS URL
                         </label>
                         <input
                             type="url"
                             value={atsUrl}
                             onChange={(e) => setAtsUrl(e.target.value)}
-                            placeholder="https://admin.applicantpro.com"
+                            placeholder="https://your-company.isolved.com"
                             className="w-full p-3 border border-gray-300 rounded-lg text-gray-900"
                         />
                     </div>
@@ -89,13 +99,6 @@ export default function Home() {
                 </div>
             </div>
         )
-    }
-
-    if (selectedCaseIndex !== null) {
-        return <TestCaseViewer
-            testCase={testCases[selectedCaseIndex]}
-            onStatusChange={handleStatusChange}
-        />
     }
 
     return (
@@ -134,7 +137,7 @@ export default function Home() {
                             className={`bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-shadow ${tc.status === 'approved' ? 'border-l-4 border-green-500' :
                                     tc.status === 'rejected' ? 'border-l-4 border-red-500' : ''
                                 }`}
-                            onClick={() => setSelectedCaseIndex(index)}
+                            onClick={() => openTestCaseReview(index)}
                         >
                             <div className="flex justify-between items-start mb-2">
                                 <span className="text-sm font-mono text-gray-500">{tc.id}</span>
