@@ -26,7 +26,7 @@ export default function Home() {
         if (selectedCaseIndex === null) return
 
         const updatedCases = [...testCases]
-        const wasAlreadyReviewed = updatedCases[selectedCaseIndex].status !== 'pending'
+        const previousStatus = updatedCases[selectedCaseIndex].status
 
         updatedCases[selectedCaseIndex].status = status
         updatedCases[selectedCaseIndex].notes = notes
@@ -35,7 +35,8 @@ export default function Home() {
 
         setTestCases(updatedCases)
 
-        if (!wasAlreadyReviewed) {
+        // Only increment if status changed from 'pending' to 'approved' or 'rejected'
+        if (previousStatus === 'pending' && status !== 'pending') {
             setReviewedCount(prev => prev + 1)
         }
 
