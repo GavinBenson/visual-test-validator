@@ -8,6 +8,7 @@ export interface TestCase {
     id: string;
     title: string;
     steps: string[];
+    expectedResults?: string[]; 
     url: string;
     status: 'pending' | 'approved' | 'rejected';
     description?: string;

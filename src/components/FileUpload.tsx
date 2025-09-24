@@ -51,6 +51,12 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Enter the correct password in the Password field',
                     'Click the Login button'
                 ],
+                expectedResults: [
+                    'Admin Login Page loads successfully',
+                    'Username is accepted',
+                    'Password is accepted',
+                    'User is redirected to the admin dashboard/home page; session is established; login is logged in the audit trail'
+                ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
             },
@@ -62,6 +68,12 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Enter a valid username',
                     'Enter an invalid Password',
                     'Click the Login button'
+                ],
+                expectedResults: [
+                    'Admin Login Page loads',
+                    'Valid user is entered',
+                    'Invalid password is entered',
+                    'Error message is displayed; user is not logged in; failed attempt is logged in the audit trail'
                 ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
@@ -75,6 +87,12 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Repeat step 2 for the maximum allowed failed attempts (5 times)',
                     'Attempt to log in again with the correct password'
                 ],
+                expectedResults: [
+                    'Admin Login Page loads',
+                    'Valid username and Invalid password is entered',
+                    'After X failed attempts, account is locked; error message is displayed',
+                    'User cannot log in even with the correct password; lockout is logged in the audit trail'
+                ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
             },
@@ -87,6 +105,12 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Enter the registered email address',
                     'Submit the password reset request'
                 ],
+                expectedResults: [
+                    'Admin Login Page loads',
+                    'Forgot Password link is visible and clickable',
+                    'Registered email is accepted',
+                    'Password reset email is sent; confirmation message is displayed; event is logged in the DB'
+                ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
             },
@@ -97,6 +121,11 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Navigate to the Admin Login Page',
                     'Enter valid username and password',
                     'Click Login'
+                ],
+                expectedResults: [
+                    'Admin Login Page loads',
+                    'Credentials are accepted',
+                    '2FA prompt is displayed (e.g., Enter your authentication code)'
                 ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
@@ -109,6 +138,11 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Enter a valid 2FA code',
                     'Click Submit or equivalent button'
                 ],
+                expectedResults: [
+                    '2FA prompt is displayed',
+                    'Valid code is accepted',
+                    'User is logged in and redirected to the admin dashboard; 2FA event is logged in the audit trail'
+                ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
             },
@@ -119,6 +153,11 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Log in as admin',
                     'Remain inactive for the session timeout period',
                     'Attempt to perform any action'
+                ],
+                expectedResults: [
+                    'User is logged in',
+                    'After timeout, user is logged out automatically',
+                    'Login page is displayed; user must re-authenticate'
                 ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
@@ -131,6 +170,11 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Attempt to log in and complete 2FA',
                     'Verify layout, input fields, and buttons are usable'
                 ],
+                expectedResults: [
+                    'Login page and 2FA prompt display correctly',
+                    'All fields and buttons are usable without horizontal scrolling',
+                    'User can log in and complete 2FA on mobile'
+                ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
             },
@@ -142,6 +186,11 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                     'Attempt to access via HTTPS',
                     'Attempt to submit credentials over HTTP'
                 ],
+                expectedResults: [
+                    'HTTP request is redirected to HTTPS',
+                    'HTTPS page loads securely',
+                    'Credentials cannot be submitted over HTTP; only HTTPS is allowed'
+                ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
             },
@@ -151,6 +200,10 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                 steps: [
                     'Enter a username and password with special characters',
                     'Attempt to log in'
+                ],
+                expectedResults: [
+                    'Special characters are accepted if valid; login succeeds or fails as appropriate; no security vulnerabilities are introduced',
+                    'User is routed to correct landing page after successful login'
                 ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'

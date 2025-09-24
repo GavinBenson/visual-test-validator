@@ -20,6 +20,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
     const [atsWindow, setAtsWindow] = useState<Window | null>(null);
 
     const currentStep = testCase.steps[currentStepIndex];
+    const currentExpectedResult = testCase.expectedResults?.[currentStepIndex];
     const isLastStep = currentStepIndex === testCase.steps.length - 1;
     const isFirstStep = currentStepIndex === 0;
 
@@ -231,12 +232,12 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         <div
                             key={index}
                             className={`w-3 h-3 rounded-full ${index === currentStepIndex
-                                    ? 'bg-blue-500 ring-2 ring-blue-300'
-                                    : stepResults[index] === 'pass'
-                                        ? 'bg-green-500'
-                                        : stepResults[index] === 'fail'
-                                            ? 'bg-red-500'
-                                            : 'bg-gray-300'
+                                ? 'bg-blue-500 ring-2 ring-blue-300'
+                                : stepResults[index] === 'pass'
+                                    ? 'bg-green-500'
+                                    : stepResults[index] === 'fail'
+                                        ? 'bg-red-500'
+                                        : 'bg-gray-300'
                                 }`}
                             title={step.slice(0, 50)}
                         />
@@ -250,13 +251,22 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                     <p className="text-blue-700">{currentStep}</p>
                 </div>
 
+                {currentExpectedResult && (
+                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-4">
+                        <h3 className="font-semibold text-green-800 mb-2 text-sm">
+                            Expected Result {currentStepIndex + 1}
+                        </h3>
+                        <p className="text-green-700">{currentExpectedResult}</p>
+                    </div>
+                )}
+
                 {Object.keys(stepResults).length < testCase.steps.length ? (
                     <button
                         onClick={captureScreenshot}
                         disabled={isCapturing}
                         className={`w-full py-3 px-4 rounded-lg font-semibold mb-4 ${isCapturing
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                : 'bg-blue-500 hover:bg-blue-600 text-white'
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-blue-500 hover:bg-blue-600 text-white'
                             }`}
                     >
                         {isCapturing ? 'Capturing...' : 'Capture Screenshot'}
@@ -300,8 +310,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         <button
                             onClick={() => markStepResult('fail')}
                             className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'fail'
-                                    ? 'bg-red-500 text-white'
-                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                ? 'bg-red-500 text-white'
+                                : 'bg-red-100 text-red-700 hover:bg-red-200'
                                 }`}
                         >
                             Fail
@@ -309,8 +319,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         <button
                             onClick={() => markStepResult('pass')}
                             className={`flex-1 py-2 px-3 rounded font-semibold ${stepResults[currentStepIndex] === 'pass'
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                ? 'bg-green-500 text-white'
+                                : 'bg-green-100 text-green-700 hover:bg-green-200'
                                 }`}
                         >
                             Pass
@@ -323,8 +333,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         onClick={prevStep}
                         disabled={isFirstStep}
                         className={`px-4 py-2 rounded font-medium ${isFirstStep
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
                             }`}
                     >
                         Previous
@@ -334,8 +344,8 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                         onClick={nextStep}
                         disabled={isLastStep}
                         className={`px-4 py-2 rounded font-medium ${isLastStep
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
                             }`}
                     >
                         Next
