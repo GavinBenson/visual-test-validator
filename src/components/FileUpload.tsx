@@ -200,7 +200,7 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                         onClick={loadSampleData}
                         className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
                     >
-                        Load Sample Data (10 Admin Login Test Cases)
+                        Load Sample Data
                     </button>
                 </div>
 
