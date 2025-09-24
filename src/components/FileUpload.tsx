@@ -43,27 +43,114 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
     const loadSampleData = () => {
         const sampleTestCases: TestCase[] = [
             {
-                id: '1',
-                title: 'Login Functionality Test',
+                id: '127',
+                title: 'Admin Login Page - Successful Login with Valid Credentials',
                 steps: [
-                    'Navigate to login page',
-                    'Enter valid username',
-                    'Enter valid password',
-                    'Click login button',
-                    'Verify successful login'
+                    'Navigate to the Admin Login Page',
+                    'Enter a valid admin username in the Username field',
+                    'Enter the correct password in the Password field',
+                    'Click the Login button'
                 ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
             },
             {
-                id: '2',
-                title: 'Job Search Test',
+                id: '128',
+                title: 'Admin Login Page - Unsuccessful Login with Invalid Credentials',
                 steps: [
-                    'Click on job search',
-                    'Enter job title "Software Developer"',
-                    'Select location "Portland, OR"',
-                    'Click search button',
-                    'Verify results display'
+                    'Navigate to the Admin Login Page',
+                    'Enter a valid username',
+                    'Enter an invalid Password',
+                    'Click the Login button'
+                ],
+                url: 'https://demo.isolved.com',
+                status: 'pending'
+            },
+            {
+                id: '129',
+                title: 'Admin Login Page - Account Lockout After Multiple Failed Attempts',
+                steps: [
+                    'Navigate to the Admin Login Page',
+                    'Enter a valid username and an invalid password',
+                    'Repeat step 2 for the maximum allowed failed attempts (5 times)',
+                    'Attempt to log in again with the correct password'
+                ],
+                url: 'https://demo.isolved.com',
+                status: 'pending'
+            },
+            {
+                id: '130',
+                title: 'Admin Login Page - Password Reset Link Functionality',
+                steps: [
+                    'Navigate to the Admin Login Page',
+                    'Click the Forgot Password link',
+                    'Enter the registered email address',
+                    'Submit the password reset request'
+                ],
+                url: 'https://demo.isolved.com',
+                status: 'pending'
+            },
+            {
+                id: '133',
+                title: 'Admin Login Page - 2FA Prompt on Login',
+                steps: [
+                    'Navigate to the Admin Login Page',
+                    'Enter valid username and password',
+                    'Click Login'
+                ],
+                url: 'https://demo.isolved.com',
+                status: 'pending'
+            },
+            {
+                id: '134',
+                title: 'Admin Login Page - Successful 2FA Code Entry',
+                steps: [
+                    'Complete steps to reach the 2FA prompt',
+                    'Enter a valid 2FA code',
+                    'Click Submit or equivalent button'
+                ],
+                url: 'https://demo.isolved.com',
+                status: 'pending'
+            },
+            {
+                id: '142',
+                title: 'Admin Login Page - Session Timeout After Login',
+                steps: [
+                    'Log in as admin',
+                    'Remain inactive for the session timeout period',
+                    'Attempt to perform any action'
+                ],
+                url: 'https://demo.isolved.com',
+                status: 'pending'
+            },
+            {
+                id: '144',
+                title: 'Admin Login Page - Responsive Design on Mobile Devices',
+                steps: [
+                    'Open the Admin Login Page on a mobile device or emulator',
+                    'Attempt to log in and complete 2FA',
+                    'Verify layout, input fields, and buttons are usable'
+                ],
+                url: 'https://demo.isolved.com',
+                status: 'pending'
+            },
+            {
+                id: '145',
+                title: 'Admin Login Page - Security: SSL/TLS Enforcement',
+                steps: [
+                    'Attempt to access the Admin Login Page via HTTP',
+                    'Attempt to access via HTTPS',
+                    'Attempt to submit credentials over HTTP'
+                ],
+                url: 'https://demo.isolved.com',
+                status: 'pending'
+            },
+            {
+                id: '149',
+                title: 'Admin Login Page - Edge Case: Special Characters in Credentials',
+                steps: [
+                    'Enter a username and password with special characters',
+                    'Attempt to log in'
                 ],
                 url: 'https://demo.isolved.com',
                 status: 'pending'
@@ -113,7 +200,7 @@ export default function FileUpload({ onTestCasesUploaded }: FileUploadProps) {
                         onClick={loadSampleData}
                         className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
                     >
-                        Load Sample Data
+                        Load Sample Data (10 Admin Login Test Cases)
                     </button>
                 </div>
 
