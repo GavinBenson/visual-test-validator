@@ -38,7 +38,22 @@ export default function Home() {
     }, [testCases]);
 
     const handleTestCasesUploaded = (cases: TestCase[]) => {
-        const casesWithUrl = cases.map(tc => ({ ...tc, url: atsUrl }))
+        // Explicitly preserve all fields including expectedResults
+        const casesWithUrl = cases.map(tc => ({
+            id: tc.id,
+            title: tc.title,
+            description: tc.description,
+            steps: tc.steps,
+            expectedResults: tc.expectedResults, // Explicitly include this
+            status: tc.status,
+            url: atsUrl,
+            preconditions: tc.preconditions,
+            postconditions: tc.postconditions,
+            notes: tc.notes,
+            stepResults: tc.stepResults,
+            screenshots: tc.screenshots
+        }))
+
         setTestCases(casesWithUrl)
         sessionStorage.setItem('testCases', JSON.stringify(casesWithUrl))
         setReviewedCount(0)
