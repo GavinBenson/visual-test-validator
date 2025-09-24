@@ -254,7 +254,7 @@ export default function TestCaseViewer({ testCase, onStatusChange }: TestCaseVie
                 {currentExpectedResult && (
                     <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-4">
                         <h3 className="font-semibold text-green-800 mb-2 text-sm">
-                            Expected Result {currentStepIndex + 1}
+                            Expected Result
                         </h3>
                         <p className="text-green-700">{currentExpectedResult}</p>
                     </div>
