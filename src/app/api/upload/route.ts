@@ -41,17 +41,12 @@ export async function POST(request: NextRequest) {
                     const stepActions = parseSteps(row.steps_actions);
                     const stepResults = parseSteps(row.steps_result);
 
-                    // Combine steps with expected results
-                    const combinedSteps = stepActions.map((action, idx) => {
-                        const result = stepResults[idx] || '';
-                        return result ? `${action} -> Expected: ${result}` : action;
-                    });
-
-                    if (combinedSteps.length > 0) {
+                    if (stepActions.length > 0) {
                         testCases.push({
                             id: row['v2.id'].toString(),
                             title: row.title,
-                            steps: combinedSteps,
+                            steps: stepActions,
+                            expectedResults: stepResults, // Keep as separate array
                             url: 'https://your-ats-domain.com',
                             status: 'pending',
                             description: row.description || '',
