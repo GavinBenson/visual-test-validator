@@ -24,6 +24,9 @@ export default function Home() {
 
                 setTestCases(updatedCases);
 
+                // Save to sessionStorage so it persists when reopening
+                sessionStorage.setItem('testCases', JSON.stringify(updatedCases));
+
                 if (previousStatus === 'pending' && status !== 'pending') {
                     setReviewedCount(prev => prev + 1);
                 }
@@ -135,7 +138,7 @@ export default function Home() {
                         <div
                             key={tc.id}
                             className={`bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-shadow ${tc.status === 'approved' ? 'border-l-4 border-green-500' :
-                                    tc.status === 'rejected' ? 'border-l-4 border-red-500' : ''
+                                tc.status === 'rejected' ? 'border-l-4 border-red-500' : ''
                                 }`}
                             onClick={() => openTestCaseReview(index)}
                         >
@@ -143,8 +146,8 @@ export default function Home() {
                                 <span className="text-sm font-mono text-gray-500">{tc.id}</span>
                                 {tc.status !== 'pending' && (
                                     <span className={`text-sm px-2 py-1 rounded ${tc.status === 'approved'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-red-100 text-red-800'
                                         }`}>
                                         {tc.status}
                                     </span>
